@@ -14,16 +14,208 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      bookings: {
+        Row: {
+          check_in_date: string
+          check_out_date: string
+          created_at: string | null
+          guest_email: string
+          guest_name: string
+          guest_phone: string
+          guests_count: number
+          id: number
+          room_id: number | null
+          special_requests: string | null
+          status: string | null
+          total_price: number
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          check_in_date: string
+          check_out_date: string
+          created_at?: string | null
+          guest_email: string
+          guest_name: string
+          guest_phone: string
+          guests_count?: number
+          id?: never
+          room_id?: number | null
+          special_requests?: string | null
+          status?: string | null
+          total_price: number
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          check_in_date?: string
+          check_out_date?: string
+          created_at?: string | null
+          guest_email?: string
+          guest_name?: string
+          guest_phone?: string
+          guests_count?: number
+          id?: never
+          room_id?: number | null
+          special_requests?: string | null
+          status?: string | null
+          total_price?: number
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          full_name: string
+          phone: string | null
+          role: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          full_name: string
+          phone?: string | null
+          role?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          full_name?: string
+          phone?: string | null
+          role?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      room_availability: {
+        Row: {
+          date: string
+          id: number
+          price_override: number | null
+          room_id: number | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          date: string
+          id?: never
+          price_override?: number | null
+          room_id?: number | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          date?: string
+          id?: never
+          price_override?: number | null
+          room_id?: number | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_availability_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rooms: {
+        Row: {
+          amenities: string[] | null
+          capacity: number
+          description: string | null
+          id: number
+          is_active: boolean | null
+          name: string
+          photos: string[] | null
+          price_per_night: number
+          room_type: string | null
+          size_sqm: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          amenities?: string[] | null
+          capacity?: number
+          description?: string | null
+          id?: never
+          is_active?: boolean | null
+          name: string
+          photos?: string[] | null
+          price_per_night: number
+          room_type?: string | null
+          size_sqm?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          amenities?: string[] | null
+          capacity?: number
+          description?: string | null
+          id?: never
+          is_active?: boolean | null
+          name?: string
+          photos?: string[] | null
+          price_per_night?: number
+          room_type?: string | null
+          size_sqm?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _user_id: string
+          _role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +342,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const
