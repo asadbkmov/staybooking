@@ -11,6 +11,7 @@ import { useSEO } from "@/hooks/use-seo";
 import { RoomCardSkeleton } from "@/components/LoadingSkeleton";
 
 const Index = () => {
+  // Hotel booking system main page
   useSEO({ title: "Бронирование отеля | Доступность и номера", description: "Онлайн-бронирование номеров: календарь доступных дат, цены и оформление.", canonicalPath: "/" });
   const { user } = useAuth();
   const [range, setRange] = useState<DateRange | undefined>();
