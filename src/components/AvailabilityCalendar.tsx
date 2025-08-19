@@ -3,8 +3,7 @@ import { startOfMonth, endOfMonth } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Calendar } from "@/components/ui/calendar";
-
-export type DateRange = { from?: Date; to?: Date };
+import { DateRange } from "react-day-picker";
 
 interface AvailabilityCalendarProps {
   month?: Date;

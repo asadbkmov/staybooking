@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import type { DateRange } from "./AvailabilityCalendar";
+import type { DateRange } from "react-day-picker";
 import { useAuth } from "@/hooks/useAuth";
 
 interface RoomLite {
