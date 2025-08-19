@@ -65,7 +65,7 @@ export function BookingForm({ room, range, onSuccess }: BookingFormProps) {
     });
 
     if (error) {
-      toast({ title: "Ошибка", description: error.message });
+      toast({ title: "Ошибка", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Бронирование создано", description: "Мы свяжемся с вами для подтверждения." });
       onSuccess?.();
@@ -102,7 +102,18 @@ export function BookingForm({ room, range, onSuccess }: BookingFormProps) {
         <span>Ночей: {nights}</span>
         <span>Итого: {total.toLocaleString()} ₽</span>
       </div>
-      <Button type="submit" className="w-full">Забронировать</Button>
+      <div className="flex gap-2">
+        <Button type="submit" className="flex-1">Забронировать</Button>
+        <Button 
+          type="button" 
+          variant="outline" 
+          className="flex-1"
+          disabled
+        >
+          Оплатить
+          {/* TODO: Интеграция с Payme/Uzum - добавить обработчик клика */}
+        </Button>
+      </div>
     </form>
   );
 }

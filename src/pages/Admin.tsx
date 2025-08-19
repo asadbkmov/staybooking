@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useSEO } from "@/hooks/use-seo";
+import { BookingTableSkeleton } from "@/components/LoadingSkeleton";
 
 interface RoleRow { role: string }
 
@@ -72,14 +73,19 @@ const Admin = () => {
       ({ error } = await supabase.from("room_availability").insert(payload));
     }
 
-    if (error) toast({ title: "Ошибка", description: error.message });
-    else {
-      toast({ title: "Сохранено", description: "Доступность обновлена" });
+    if (error) {
+      toast({ title: "Ошибка", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Успешно", description: "Доступность обновлена." });
       qc.invalidateQueries({ queryKey: ["availability"] });
+      setRoomId("");
+      setDate("");
+      setStatus("available");
+      setPriceOverride("");
     }
   };
 
-  const { data: bookings = [] } = useQuery({
+  const { data: bookings, isLoading: bookingsLoading } = useQuery({
     enabled: !!isAdmin,
     queryKey: ["allBookings"],
     queryFn: async () => {
@@ -147,38 +153,58 @@ const Admin = () => {
 
       <section className="space-y-4">
         <h2 className="text-xl font-semibold">Все бронирования</h2>
-        <div className="overflow-x-auto border rounded-md">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/50">
-              <tr>
-                <th className="text-left p-2">ID</th>
-                <th className="text-left p-2">Гость</th>
-                <th className="text-left p-2">Email</th>
-                <th className="text-left p-2">Телефон</th>
-                <th className="text-left p-2">Номер</th>
-                <th className="text-left p-2">Даты</th>
-                <th className="text-left p-2">Гостей</th>
-                <th className="text-left p-2">Статус</th>
-                <th className="text-left p-2">Сумма</th>
-              </tr>
-            </thead>
-            <tbody>
-              {bookings.map((b: any) => (
-                <tr key={b.id} className="border-t">
-                  <td className="p-2">{b.id}</td>
-                  <td className="p-2">{b.guest_name}</td>
-                  <td className="p-2">{b.guest_email}</td>
-                  <td className="p-2">{b.guest_phone}</td>
-                  <td className="p-2">#{b.room_id}</td>
-                  <td className="p-2">{b.check_in_date} – {b.check_out_date}</td>
-                  <td className="p-2">{b.guests_count}</td>
-                  <td className="p-2">{b.status}</td>
-                  <td className="p-2">{Number(b.total_price).toLocaleString()} ₽</td>
+        {bookingsLoading ? (
+          <BookingTableSkeleton />
+        ) : (
+          <div className="overflow-x-auto border rounded-md">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left p-2">ID</th>
+                  <th className="text-left p-2">Гость</th>
+                  <th className="text-left p-2">Email</th>
+                  <th className="text-left p-2">Телефон</th>
+                  <th className="text-left p-2">Номер</th>
+                  <th className="text-left p-2">Даты</th>
+                  <th className="text-left p-2">Гостей</th>
+                  <th className="text-left p-2">Статус</th>
+                  <th className="text-left p-2">Сумма</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {bookings?.length > 0 ? (
+                  bookings.map((b: any) => (
+                    <tr key={b.id} className="border-t">
+                      <td className="p-2">{b.id}</td>
+                      <td className="p-2">{b.guest_name}</td>
+                      <td className="p-2">{b.guest_email}</td>
+                      <td className="p-2">{b.guest_phone}</td>
+                      <td className="p-2">#{b.room_id}</td>
+                      <td className="p-2">{b.check_in_date} – {b.check_out_date}</td>
+                      <td className="p-2">{b.guests_count}</td>
+                      <td className="p-2">
+                        <span className={`px-2 py-1 rounded text-xs ${
+                          b.status === 'confirmed' ? 'bg-secondary text-secondary-foreground' :
+                          b.status === 'cancelled' ? 'bg-destructive text-destructive-foreground' :
+                          'bg-muted text-muted-foreground'
+                        }`}>
+                          {b.status}
+                        </span>
+                      </td>
+                      <td className="p-2">{Number(b.total_price).toLocaleString()} ₽</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={9} className="text-center py-4 text-muted-foreground">
+                      Нет бронирований
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </section>
     </main>
   );

@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -8,11 +8,11 @@ import { DateRange } from "react-day-picker";
 import { BookingForm } from "@/components/BookingForm";
 import { useAuth } from "@/hooks/useAuth";
 import { useSEO } from "@/hooks/use-seo";
+import { RoomCardSkeleton } from "@/components/LoadingSkeleton";
 
 const Index = () => {
   useSEO({ title: "Бронирование отеля | Доступность и номера", description: "Онлайн-бронирование номеров: календарь доступных дат, цены и оформление.", canonicalPath: "/" });
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [range, setRange] = useState<DateRange | undefined>();
 
   const { data: rooms = [] } = useQuery({
@@ -54,7 +54,12 @@ const Index = () => {
         <div>
           <h2 className="text-xl font-semibold mb-2">Номера</h2>
           <div className="grid gap-4">
-            {rooms.map((r: any) => (
+            {rooms.length === 0 ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <RoomCardSkeleton key={i} />
+              ))
+            ) : (
+              rooms.map((r: any) => (
               <article key={r.id} className="p-4 border rounded-md bg-card">
                 <div className="flex items-center justify-between">
                   <div>
@@ -77,7 +82,8 @@ const Index = () => {
                   )}
                 </div>
               </article>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </section>

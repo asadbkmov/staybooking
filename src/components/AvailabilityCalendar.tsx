@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Calendar } from "@/components/ui/calendar";
 import { DateRange } from "react-day-picker";
+import { CalendarSkeleton } from "@/components/LoadingSkeleton";
 
 interface AvailabilityCalendarProps {
   month?: Date;
@@ -59,6 +60,10 @@ export function AvailabilityCalendar({ month, selected, onSelect }: Availability
     }
     return days;
   }, [availableDates, currentMonth]);
+
+  if (availableDates.length === 0) {
+    return <CalendarSkeleton />;
+  }
 
   return (
     <div className="p-4 border rounded-md bg-card">

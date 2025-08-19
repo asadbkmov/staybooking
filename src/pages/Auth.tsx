@@ -29,8 +29,14 @@ const Auth = () => {
     e.preventDefault();
     const action = mode === "login" ? signIn : signUp;
     const { error } = await action(email, password);
-    if (error) toast({ title: "Ошибка", description: error.message });
-    else toast({ title: mode === "login" ? "Успешный вход" : "Регистрация", description: mode === "login" ? "Добро пожаловать!" : "Проверьте почту для подтверждения." });
+    if (error) {
+      toast({ title: "Ошибка", description: error.message, variant: "destructive" });
+    } else {
+      toast({ 
+        title: mode === "login" ? "Успешный вход" : "Регистрация", 
+        description: mode === "login" ? "Добро пожаловать!" : "Проверьте почту для подтверждения." 
+      });
+    }
   };
 
   return (
