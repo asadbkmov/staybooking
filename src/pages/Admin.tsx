@@ -98,6 +98,35 @@ const Admin = () => {
     },
   });
 
+  // Realtime subscription for bookings
+  useEffect(() => {
+    if (!isAdmin) return;
+    const channel = supabase
+      .channel("bookings_realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "bookings" },
+        () => qc.invalidateQueries({ queryKey: ["allBookings"] })
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [isAdmin, qc]);
+
+  const updateBookingStatus = async (bookingId: number, newStatus: string) => {
+    const { error } = await supabase
+      .from("bookings")
+      .update({ status: newStatus })
+      .eq("id", bookingId);
+
+    if (error) {
+      toast({ title: "Ошибка", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Успешно", description: `Статус бронирования обновлен на ${newStatus}` });
+    }
+  };
+
   if (!user) {
     return (
       <main className="min-h-screen flex items-center justify-center p-6">
@@ -169,6 +198,7 @@ const Admin = () => {
                   <th className="text-left p-2">Гостей</th>
                   <th className="text-left p-2">Статус</th>
                   <th className="text-left p-2">Сумма</th>
+                  <th className="text-left p-2">Действия</th>
                 </tr>
               </thead>
               <tbody>
@@ -192,11 +222,34 @@ const Admin = () => {
                         </span>
                       </td>
                       <td className="p-2">{Number(b.total_price).toLocaleString()} ₽</td>
+                      <td className="p-2">
+                        <div className="flex gap-1">
+                          {b.status === 'pending' && (
+                            <Button 
+                              size="sm" 
+                              onClick={() => updateBookingStatus(b.id, 'confirmed')}
+                              className="text-xs"
+                            >
+                              Подтвердить
+                            </Button>
+                          )}
+                          {(b.status === 'pending' || b.status === 'confirmed') && (
+                            <Button 
+                              size="sm" 
+                              variant="destructive"
+                              onClick={() => updateBookingStatus(b.id, 'cancelled')}
+                              className="text-xs"
+                            >
+                              Отменить
+                            </Button>
+                          )}
+                        </div>
+                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={9} className="text-center py-4 text-muted-foreground">
+                    <td colSpan={10} className="text-center py-4 text-muted-foreground">
                       Нет бронирований
                     </td>
                   </tr>

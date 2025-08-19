@@ -50,6 +50,24 @@ export function BookingForm({ room, range, onSuccess }: BookingFormProps) {
       return;
     }
 
+    // Check for booking conflicts
+    const { data: conflicts, error: checkError } = await supabase
+      .from("bookings")
+      .select("id")
+      .eq("room_id", room.id)
+      .in("status", ["pending", "confirmed"])
+      .or(`check_in_date.lte.${format(range.to, 'yyyy-MM-dd')},check_out_date.gte.${format(range.from, 'yyyy-MM-dd')}`);
+
+    if (checkError) {
+      toast({ title: "Ошибка", description: "Не удалось проверить доступность", variant: "destructive" });
+      return;
+    }
+
+    if (conflicts && conflicts.length > 0) {
+      toast({ title: "Даты заняты", description: "Выберите другие даты - номер уже забронирован на этот период", variant: "destructive" });
+      return;
+    }
+
     const { error } = await supabase.from("bookings").insert({
       user_id: user.id,
       room_id: room.id,
