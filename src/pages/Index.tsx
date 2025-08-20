@@ -36,6 +36,7 @@ const Index = () => {
       <header className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Онлайн-бронирование</h1>
         <nav className="flex items-center gap-3 text-sm">
+          <Link to="/hotels" className="text-primary underline-offset-4 hover:underline">Отели</Link>
           {!user ? (
             <Link to="/auth" className="text-primary underline-offset-4 hover:underline">Вход / Регистрация</Link>
           ) : (

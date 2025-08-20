@@ -73,6 +73,89 @@ export type Database = {
           },
         ]
       }
+      hotel_managers: {
+        Row: {
+          created_at: string | null
+          hotel_id: number | null
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          hotel_id?: number | null
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          hotel_id?: number | null
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hotel_managers_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hotels: {
+        Row: {
+          address: string | null
+          amenities: string[] | null
+          city: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          country: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: number
+          name: string
+          photos: string[] | null
+          rating: number | null
+          updated_at: string | null
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          amenities?: string[] | null
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          country?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: never
+          name: string
+          photos?: string[] | null
+          rating?: number | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          amenities?: string[] | null
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          country?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: never
+          name?: string
+          photos?: string[] | null
+          rating?: number | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -143,6 +226,7 @@ export type Database = {
           amenities: string[] | null
           capacity: number
           description: string | null
+          hotel_id: number | null
           id: number
           is_active: boolean | null
           name: string
@@ -156,6 +240,7 @@ export type Database = {
           amenities?: string[] | null
           capacity?: number
           description?: string | null
+          hotel_id?: number | null
           id?: never
           is_active?: boolean | null
           name: string
@@ -169,6 +254,7 @@ export type Database = {
           amenities?: string[] | null
           capacity?: number
           description?: string | null
+          hotel_id?: number | null
           id?: never
           is_active?: boolean | null
           name?: string
@@ -178,7 +264,15 @@ export type Database = {
           size_sqm?: number | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "rooms_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "hotels"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {

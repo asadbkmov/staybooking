@@ -17,11 +17,13 @@ interface RoomLite {
 
 interface BookingFormProps {
   room: RoomLite;
-  range: DateRange | undefined;
+  range?: DateRange | undefined;
+  checkInDate?: Date;
+  checkOutDate?: Date;
   onSuccess?: () => void;
 }
 
-export function BookingForm({ room, range, onSuccess }: BookingFormProps) {
+export function BookingForm({ room, range, checkInDate, checkOutDate, onSuccess }: BookingFormProps) {
   const { user } = useAuth();
   const { toast } = useToast();
   const [form, setForm] = useState({
@@ -33,9 +35,11 @@ export function BookingForm({ room, range, onSuccess }: BookingFormProps) {
   });
 
   const nights = useMemo(() => {
-    if (!range?.from || !range?.to) return 0;
-    return Math.max(1, differenceInCalendarDays(range.to, range.from));
-  }, [range]);
+    const from = checkInDate || range?.from;
+    const to = checkOutDate || range?.to;
+    if (!from || !to) return 0;
+    return Math.max(1, differenceInCalendarDays(to, from));
+  }, [range, checkInDate, checkOutDate]);
 
   const total = useMemo(() => nights * (room.price_per_night ?? 0), [nights, room.price_per_night]);
 
@@ -45,7 +49,9 @@ export function BookingForm({ room, range, onSuccess }: BookingFormProps) {
       toast({ title: "Требуется вход", description: "Пожалуйста, войдите, чтобы забронировать." });
       return;
     }
-    if (!range?.from || !range?.to) {
+    const from = checkInDate || range?.from;
+    const to = checkOutDate || range?.to;
+    if (!from || !to) {
       toast({ title: "Выберите даты", description: "Укажите даты заезда и выезда." });
       return;
     }
@@ -56,7 +62,7 @@ export function BookingForm({ room, range, onSuccess }: BookingFormProps) {
       .select("id")
       .eq("room_id", room.id)
       .in("status", ["pending", "confirmed"])
-      .or(`check_in_date.lte.${format(range.to, 'yyyy-MM-dd')},check_out_date.gte.${format(range.from, 'yyyy-MM-dd')}`);
+      .or(`check_in_date.lte.${format(to, 'yyyy-MM-dd')},check_out_date.gte.${format(from, 'yyyy-MM-dd')}`);
 
     if (checkError) {
       toast({ title: "Ошибка", description: "Не удалось проверить доступность", variant: "destructive" });
@@ -76,8 +82,8 @@ export function BookingForm({ room, range, onSuccess }: BookingFormProps) {
       guest_phone: form.guest_phone,
       guests_count: form.guests_count,
       special_requests: form.special_requests || null,
-      check_in_date: format(range.from, 'yyyy-MM-dd'),
-      check_out_date: format(range.to, 'yyyy-MM-dd'),
+      check_in_date: format(from, 'yyyy-MM-dd'),
+      check_out_date: format(to, 'yyyy-MM-dd'),
       total_price: total,
       status: 'pending',
     });
