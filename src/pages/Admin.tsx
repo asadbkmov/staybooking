@@ -1,13 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { AdminLayout } from "@/components/AdminLayout";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
-import { useAuth } from "@/hooks/useAuth";
 import { useSEO } from "@/hooks/use-seo";
-import { BookingTableSkeleton } from "@/components/LoadingSkeleton";
+import { Link } from "react-router-dom";
+import { Building2, Users, Calendar, Settings, BarChart3, TrendingUp, DollarSign } from "lucide-react";
 
 interface RoleRow { role: string }
 
